@@ -1,0 +1,451 @@
+CASOS DE USO — TO-DO LIST
+
+UC01 — Cadastrar usuário
+
+Ator: Usuário
+
+Objetivo:
+Permitir que uma pessoa crie uma conta para utilizar o sistema.
+
+Pré-condição:
+O usuário ainda não possui uma conta cadastrada com aquele e-mail.
+
+Fluxo principal:
+1. O usuário acessa a tela de cadastro.
+2. O sistema solicita os dados necessários.
+3. O usuário informa seus dados.
+4. O usuário confirma o cadastro.
+5. O sistema valida os dados fornecidos.
+6. O sistema verifica a disponibilidade do e-mail.
+7. O sistema cria a conta.
+8. O sistema informa o resultado da operação.
+
+Fluxos alternativos:
+FA01 — Dados obrigatórios ausentes:
+O sistema informa quais campos precisam ser preenchidos.
+
+FA02 — Dados inválidos:
+O sistema informa que os dados fornecidos são inválidos e solicita a correção.
+
+FA03 — E-mail já utilizado:
+O sistema não revela se o endereço está associado a uma conta e apresenta uma mensagem genérica orientando o usuário a verificar os dados ou utilizar o fluxo apropriado de recuperação/acesso.
+
+Pós-condição:
+Um novo usuário é persistido no banco de dados e pode utilizar o sistema.
+
+
+UC02 — Autenticar usuário
+
+Ator: Usuário
+
+Objetivo:
+Permitir que um usuário acesse sua conta de forma segura.
+
+Pré-condição:
+O usuário possui uma conta cadastrada.
+
+Fluxo principal:
+1. O usuário acessa a tela de login.
+2. O sistema solicita e-mail e senha.
+3. O usuário informa suas credenciais.
+4. O sistema valida as credenciais.
+5. O sistema autentica o usuário.
+6. O sistema concede acesso às funcionalidades permitidas.
+
+Fluxos alternativos:
+FA01 — Credenciais inválidas:
+O sistema informa que não foi possível realizar a autenticação sem revelar qual informação está incorreta.
+
+FA02 — Campos obrigatórios ausentes:
+O sistema informa quais campos precisam ser preenchidos.
+
+Pós-condição:
+O usuário está autenticado e pode acessar suas funcionalidades.
+
+
+UC03 — Criar tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário crie uma nova tarefa.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário acessa a criação de tarefa.
+2. O sistema apresenta o formulário.
+3. O usuário informa os dados da tarefa.
+4. O usuário confirma a criação.
+5. O sistema valida os dados.
+6. O sistema cria e persiste a tarefa.
+7. O sistema informa que a tarefa foi criada com sucesso.
+
+Fluxos alternativos:
+FA01 — Dados inválidos:
+O sistema informa os campos que precisam ser corrigidos e não cria a tarefa.
+
+Pós-condição:
+Uma nova tarefa é associada ao usuário e persistida no banco de dados.
+
+
+UC04 — Visualizar tarefas
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário visualize suas tarefas.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário acessa a listagem de tarefas.
+2. O sistema identifica o usuário autenticado.
+3. O sistema busca as tarefas pertencentes ao usuário.
+4. O sistema apresenta as tarefas.
+
+Fluxos alternativos:
+FA01 — Nenhuma tarefa encontrada:
+O sistema informa que o usuário ainda não possui tarefas cadastradas.
+
+Pós-condição:
+As tarefas do usuário são apresentadas.
+
+
+UC05 — Visualizar detalhes da tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário visualize os dados completos de uma tarefa.
+
+Pré-condição:
+O usuário está autenticado e a tarefa pertence ao usuário.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa.
+2. O sistema verifica se a tarefa pertence ao usuário.
+3. O sistema busca os dados da tarefa.
+4. O sistema apresenta os detalhes.
+
+Fluxos alternativos:
+FA01 — Tarefa inexistente:
+O sistema informa que a tarefa não foi encontrada.
+
+FA02 — Tarefa pertencente a outro usuário:
+O sistema não fornece os dados da tarefa.
+
+Pós-condição:
+Os detalhes da tarefa são apresentados quando o acesso é permitido.
+
+
+UC06 — Editar tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário altere uma tarefa existente.
+
+Pré-condição:
+O usuário está autenticado e a tarefa pertence ao usuário.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa.
+2. O sistema apresenta os dados atuais.
+3. O usuário altera os dados desejados.
+4. O usuário confirma a alteração.
+5. O sistema valida os dados.
+6. O sistema atualiza a tarefa.
+7. O sistema informa que a tarefa foi atualizada.
+
+Fluxos alternativos:
+FA01 — Dados inválidos:
+O sistema informa os dados que precisam ser corrigidos.
+
+FA02 — Tarefa inexistente:
+O sistema informa que a tarefa não foi encontrada.
+
+FA03 — Tarefa pertencente a outro usuário:
+O sistema não permite a alteração.
+
+Pós-condição:
+A tarefa é atualizada no banco de dados.
+
+
+UC07 — Excluir tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário exclua uma tarefa.
+
+Pré-condição:
+O usuário está autenticado e a tarefa pertence ao usuário.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa.
+2. O sistema apresenta a opção de exclusão.
+3. O usuário confirma a exclusão.
+4. O sistema verifica a propriedade da tarefa.
+5. O sistema remove a tarefa.
+6. O sistema informa que a tarefa foi excluída.
+
+Fluxos alternativos:
+FA01 — Usuário cancela a operação:
+O sistema não realiza nenhuma alteração.
+
+FA02 — Tarefa inexistente:
+O sistema informa que a tarefa não foi encontrada.
+
+FA03 — Tarefa pertencente a outro usuário:
+O sistema não permite a exclusão.
+
+Pós-condição:
+A tarefa deixa de estar disponível para o usuário.
+
+
+UC08 — Concluir tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário marque uma tarefa como concluída.
+
+Pré-condição:
+O usuário está autenticado e a tarefa pertence ao usuário.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa pendente.
+2. O usuário solicita a conclusão.
+3. O sistema verifica a propriedade da tarefa.
+4. O sistema altera o status da tarefa para concluída.
+5. O sistema informa a alteração.
+
+Fluxos alternativos:
+FA01 — Tarefa inexistente:
+O sistema informa que a tarefa não foi encontrada.
+
+FA02 — Tarefa pertencente a outro usuário:
+O sistema não permite a alteração.
+
+Pós-condição:
+A tarefa fica marcada como concluída.
+
+
+UC09 — Reabrir tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário altere uma tarefa concluída para pendente.
+
+Pré-condição:
+O usuário está autenticado e a tarefa pertence ao usuário.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa concluída.
+2. O usuário solicita a reabertura.
+3. O sistema verifica a propriedade da tarefa.
+4. O sistema altera o status para pendente.
+5. O sistema informa a alteração.
+
+Fluxos alternativos:
+FA01 — Tarefa inexistente:
+O sistema informa que a tarefa não foi encontrada.
+
+FA02 — Tarefa pertencente a outro usuário:
+O sistema não permite a alteração.
+
+Pós-condição:
+A tarefa fica marcada como pendente.
+
+
+UC10 — Definir prioridade da tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário defina ou altere a prioridade de uma tarefa.
+
+Pré-condição:
+O usuário está autenticado e a tarefa pertence ao usuário.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa.
+2. O usuário escolhe a prioridade.
+3. O sistema valida a alteração.
+4. O sistema salva a nova prioridade.
+
+Prioridades previstas:
+- Baixa
+- Média
+- Alta
+
+Pós-condição:
+A tarefa possui a prioridade selecionada.
+
+
+UC11 — Definir prazo da tarefa
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário defina ou altere o prazo de uma tarefa.
+
+Pré-condição:
+O usuário está autenticado e a tarefa pertence ao usuário.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa.
+2. O usuário informa a data e/ou horário limite.
+3. O sistema valida o prazo.
+4. O sistema salva o prazo.
+
+Fluxos alternativos:
+FA01 — Prazo inválido:
+O sistema informa que o prazo fornecido é inválido.
+
+Pós-condição:
+A tarefa possui o prazo definido pelo usuário.
+
+
+UC12 — Gerenciar categorias
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário organize suas tarefas por categorias.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário acessa o gerenciamento de categorias.
+2. O sistema apresenta as categorias existentes.
+3. O usuário pode criar, editar ou excluir uma categoria.
+4. O sistema valida e persiste a operação.
+
+Pós-condição:
+As categorias do usuário são atualizadas.
+
+
+UC13 — Gerenciar tags
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário organize tarefas utilizando tags.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário seleciona uma tarefa.
+2. O usuário adiciona ou remove tags.
+3. O sistema valida a operação.
+4. O sistema salva as alterações.
+
+Pós-condição:
+As tags associadas à tarefa são atualizadas.
+
+
+UC14 — Pesquisar tarefas
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário encontre tarefas por meio de uma pesquisa.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário informa um termo de pesquisa.
+2. O sistema pesquisa entre as tarefas pertencentes ao usuário.
+3. O sistema apresenta os resultados.
+
+Fluxos alternativos:
+FA01 — Nenhum resultado:
+O sistema informa que nenhuma tarefa corresponde à pesquisa.
+
+Pós-condição:
+Os resultados compatíveis são apresentados.
+
+
+UC15 — Filtrar tarefas
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário filtre suas tarefas.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário seleciona um ou mais filtros.
+2. O sistema aplica os filtros às tarefas do usuário.
+3. O sistema apresenta os resultados.
+
+Filtros previstos:
+- Status
+- Prioridade
+- Categoria
+- Prazo
+
+Pós-condição:
+A listagem apresenta somente as tarefas compatíveis com os filtros.
+
+
+UC16 — Ordenar tarefas
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário organize a visualização das tarefas.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário escolhe um critério de ordenação.
+2. O sistema ordena as tarefas.
+3. O sistema apresenta a listagem ordenada.
+
+Critérios previstos:
+- Data de criação
+- Prazo
+- Prioridade
+- Título
+- Status
+
+Pós-condição:
+As tarefas são apresentadas na ordem selecionada.
+
+
+UC17 — Gerenciar perfil
+
+Ator: Usuário
+
+Objetivo:
+Permitir que o usuário visualize e altere seus dados de perfil.
+
+Pré-condição:
+O usuário está autenticado.
+
+Fluxo principal:
+1. O usuário acessa seu perfil.
+2. O sistema apresenta seus dados.
+3. O usuário altera os dados desejados.
+4. O sistema valida as alterações.
+5. O sistema persiste os novos dados.
+6. O sistema informa que o perfil foi atualizado.
+
+Fluxos alternativos:
+FA01 — Dados inválidos:
+O sistema informa os dados que precisam ser corrigidos.
+
+Pós-condição:
+Os dados permitidos do perfil são atualizados.

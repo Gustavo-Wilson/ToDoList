@@ -1,0 +1,87 @@
+1 Gerrenciamento de tarefas
+
+RF01 - Criar tarefa
+o sistema deve permitir que o usuário crie uma tarefa informando, no mínimo,título e descrição.
+
+RF02 - Visualizar detalhes da tarefa
+O sistema deve permitir visualizar todas as informações de uma tarefa expecífica.
+
+RF03 - Visualizar tarefas
+o sistema deve permitir que o usuário visualize suas tarefas cadastradas.
+
+RF04 - Editar tarefas
+o sistema deve permitir alterar os dados de uma tarefa existente.
+
+RF05 - Excluir tarefa
+o sistema deve permitir excluir uma tarefa
+
+RF06 - Concluir tarefa
+o sistema deve permitir marcar uma tarefa como concluida
+
+RF07 - Reabrir tarefa
+o sistema deve permitir alterar uma tarefa concluída novamente para pendente
+
+2 organização das tarefas
+
+RF08 - Definir prioridade
+o usuário deve poder definir a prioridade da tarefa, por exemplo:
+baixa
+média
+alta
+
+RF09 - Definir prazo
+o usuário deve poder definir uma data e/ou horário limite para conclusão da tarefaa
+
+RF10 - Categorizar tarefas
+o usuário deve poder associar uma tarefa a uma categoria, por exemplo:
+estudos
+trabalho
+pessoal
+faculdade
+projetos
+
+RF11 - Adicionar tags
+o usuário deve poder adicionar uma ou mais tags às tarefas, por exemplo:
+#java
+#spring
+
+3 Busca e filtros
+
+RF12 - Pesquisar tarefas
+o sistema  deve permitir pesquisar tarefas pelo título ou descrição
+
+RF13 - Filtrar pos status
+o usuário deve poder visualizaro status da tarefa, por exemplo:
+todas
+pendentes
+concluídas
+
+RF14 - Filtrar por prioridade
+o uuário deve poder filtrar tarefas por prioridade
+
+RF15 - Filtrar por categoria
+o usuário deve poder filtrar tarefas por categoria.
+
+RF16 - Ordenar tarefas
+o usuário deve poder ordenar as tarefas por critérios como:
+data de criação
+prazo
+título
+status
+
+4 Usuários
+
+RF17 - Cadastrar usuário
+o sistema deve permitir que uma pessoa crie uma conta
+
+RF18 - Autenticar usuário
+o sistema deve permitir que o usuário faça login
+
+RF19 - Encerrar sessão
+O sistema deve permitir que o usuário faça logout
+
+RF20 - Gerenciar perfil
+o usuário deve poder visualizar e alterar suas informações de perfil
+
+RF21 - Isolar tarefas por usuário
+cada usuário deve visualizar e gerenciar somente suas próprias tarefas
