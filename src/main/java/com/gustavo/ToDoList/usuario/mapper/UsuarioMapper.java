@@ -20,6 +20,5 @@ public interface UsuarioMapper {
 
         UsuarioResponse usuarioToResponse(Usuario usuario);
 
-        UsuarioLoginRequest usuarioUpdateRequestToLogin(UsuarioUpdateRequest usuarioUpdateRequest);
 
 }

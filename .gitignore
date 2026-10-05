@@ -21,3 +21,7 @@ Thumbs.db
 
 # Variáveis de ambiente
 .env
+
+#Chaves JWT
+src/main/resources/certs/private.key
+src/main/resources/certs/public.key

@@ -1,15 +1,12 @@
 package com.gustavo.ToDoList.usuario.controller;
 
-import com.gustavo.ToDoList.usuario.dto.UsuarioLoginRequest;
 import com.gustavo.ToDoList.usuario.dto.UsuarioRequest;
-import com.gustavo.ToDoList.usuario.dto.UsuarioResponse;
 import com.gustavo.ToDoList.usuario.dto.UsuarioUpdateRequest;
 import com.gustavo.ToDoList.usuario.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuario")
@@ -32,23 +29,15 @@ public class UsuarioController {
                 .body("Usuário cadastrado com sucesso");
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<UsuarioResponse> login(@RequestBody UsuarioLoginRequest request){
-        Optional<UsuarioResponse> response = service.login(request);
-
-        return response.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
-    }
-
     @PutMapping
-    public ResponseEntity<String> atualizar(@RequestBody UsuarioUpdateRequest request){
-        if (!service.atualizar(request)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
-        return ResponseEntity.ok("Nome alterado com sucesso");
+    public ResponseEntity<String> atualizar(@RequestBody UsuarioUpdateRequest request, Authentication authentication){
+        service.atualizar(request, authentication);
+        return ResponseEntity.ok("Usuário atualizado com sucesso");
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deletar(@RequestBody UsuarioLoginRequest request){
-       if(!service.deletar(request)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<Void> deletar(Authentication authentication){
+       service.deletar(authentication);
        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

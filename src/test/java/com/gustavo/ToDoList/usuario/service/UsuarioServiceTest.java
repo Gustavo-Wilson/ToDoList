@@ -1,8 +1,6 @@
 package com.gustavo.ToDoList.usuario.service;
 
-import com.gustavo.ToDoList.usuario.dto.UsuarioLoginRequest;
 import com.gustavo.ToDoList.usuario.dto.UsuarioRequest;
-import com.gustavo.ToDoList.usuario.dto.UsuarioResponse;
 import com.gustavo.ToDoList.usuario.dto.UsuarioUpdateRequest;
 import com.gustavo.ToDoList.usuario.mapper.UsuarioMapper;
 import com.gustavo.ToDoList.usuario.model.Usuario;
@@ -12,6 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -27,6 +28,12 @@ public class UsuarioServiceTest {
     @Mock
     private UsuarioMapper mapper;
 
+    @Mock
+    private PasswordEncoder encoder;
+
+    @Mock
+    private Authentication authentication;
+
     @InjectMocks
     private UsuarioService service;
 
@@ -37,10 +44,9 @@ public class UsuarioServiceTest {
         when(repository.existsByEmail(request.email())).thenReturn(true);
 
         boolean resultado = service.criar(request);
+
         assertFalse(resultado);
-
         verify(repository, never()).save(any(Usuario.class));
-
     }
 
     @Test
@@ -52,101 +58,146 @@ public class UsuarioServiceTest {
         Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com","123");
 
         when(mapper.usuarioRequestToUsuario(request)).thenReturn(usuario);
+        when(encoder.encode(usuario.getSenha())).thenReturn("SenhaCriptografada");
 
         boolean resultado = service.criar(request);
+
         assertTrue(resultado);
+        assertEquals("SenhaCriptografada", usuario.getSenha());
+
+        verify(encoder).encode("123");
         verify(repository).save(usuario);
-    }
-
-    @Test
-    void naoDeveLogarUsuarioInexistente(){
-
-        UsuarioLoginRequest request = new UsuarioLoginRequest("gustavo@gmail.com", "123");
-        when(repository.findByEmail(request.email())).thenReturn(Optional.empty());
-
-        Optional<UsuarioResponse> resultado = service.login(request);
-
-        assertTrue(resultado.isEmpty());
-    }
-
-    @Test
-    void naoDeveLogarUsuarioComSenhaErrada(){
-
-        UsuarioLoginRequest request = new UsuarioLoginRequest("gustavo@gmail.com", "1234");
-        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "123");
-
-        when(repository.findByEmail(request.email())).thenReturn(Optional.of(usuario));
-
-        Optional<UsuarioResponse> resultado = service.login(request);
-        assertTrue(resultado.isEmpty());
-    }
-
-    @Test
-    void deveLogarUsuario(){
-
-        UsuarioLoginRequest request = new UsuarioLoginRequest("gustavo@gmail.com", "123");
-        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "123");
-        when(repository.findByEmail(request.email())).thenReturn(Optional.of(usuario));
-
-        UsuarioResponse response = new UsuarioResponse(null,"Gustavo","gustavo@gmail.com");
-        when(mapper.usuarioToResponse(usuario)).thenReturn(response);
-
-        Optional<UsuarioResponse> resultado = service.login(request);
-        assertEquals(Optional.of(response), resultado);
-    }
-
-    @Test
-    void naoDeveDeletarUsuario(){
-        UsuarioLoginRequest request = new UsuarioLoginRequest("gustavo@gmail.com","1234");
-        Usuario usuario = new Usuario("Gustavo","gustavo@gmail.com","123");
-        when(repository.findByEmail(request.email())).thenReturn(Optional.of(usuario));
-
-        boolean resultado = service.deletar(request);
-        assertFalse(resultado);
-        verify(repository, never()).delete(any(Usuario.class));
-    }
-
-    @Test
-    void deveDeletarUsuario(){
-        UsuarioLoginRequest request = new UsuarioLoginRequest("gustavo@gmail.com","123");
-        Usuario usuario = new Usuario("Gustavo","gustavo@gmail.com","123");
-        when(repository.findByEmail(request.email())).thenReturn(Optional.of(usuario));
-
-        boolean resultado = service.deletar(request);
-        assertTrue(resultado);
-        verify(repository).delete(usuario);
     }
 
     @Test
     void deveAtualizarNome(){
-        UsuarioUpdateRequest request = new UsuarioUpdateRequest("gustavo@gmail.com", "123", "josé");
-        UsuarioLoginRequest loginRequest = new UsuarioLoginRequest("gustavo@gmail.com", "123");
-        Usuario usuario = new Usuario("gustavo", "gustavo@gmail.com","123");
+        UsuarioUpdateRequest request = new UsuarioUpdateRequest(null, null, "José");
 
-        when(mapper.usuarioUpdateRequestToLogin(request)).thenReturn(loginRequest);
-        when(repository.findByEmail(loginRequest.email())).thenReturn(Optional.of(usuario));
+        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "senhaCriptografada");
+        when(authentication.getName()).thenReturn(usuario.getEmail());
 
-        boolean resultado = service.atualizar(request);
+        when(repository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
 
-        assertTrue(resultado);
-        assertEquals("josé", usuario.getNome());
+        service.atualizar(request, authentication);
+
+        assertEquals("José", usuario.getNome());
+        verify(repository).save(usuario);
+
+    }
+
+    @Test
+    void deveAtualizarSenha(){
+        UsuarioUpdateRequest request = new UsuarioUpdateRequest("123", "999", null);
+        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "senhaAntiga");
+
+        when(authentication.getName()).thenReturn(usuario.getEmail());
+        when(repository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        when(encoder.matches(request.senhaAtual(), usuario.getSenha())).thenReturn(true);
+        when(encoder.encode(request.novaSenha())).thenReturn("senhaNovaCriptografada");
+
+        service.atualizar(request, authentication);
+        assertEquals("senhaNovaCriptografada", usuario.getSenha());
+
+        verify(encoder).matches("123", "senhaAntiga");
+        verify(encoder).encode("999");
         verify(repository).save(usuario);
     }
 
     @Test
-    void naoDeveAtualizarNome(){
-        UsuarioUpdateRequest request = new UsuarioUpdateRequest("gustavo@gmail.com", "1234", "josé");
-        UsuarioLoginRequest loginRequest = new UsuarioLoginRequest("gustavo@gmail.com", "1234");
-        Usuario usuario = new Usuario("gustavo", "gustavo@gmail.com","123");
+    void naoDeveAtualizarSenhaSeSenhaAtualEstiverErrada() {
 
-        when(mapper.usuarioUpdateRequestToLogin(request)).thenReturn(loginRequest);
-        when(repository.findByEmail(loginRequest.email())).thenReturn(Optional.of(usuario));
+        UsuarioUpdateRequest request = new UsuarioUpdateRequest("senhaErrada", "456", null);
 
-        boolean resultado = service.atualizar(request);
+        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "senhaAntiga");
 
-        assertFalse(resultado);
+        when(authentication.getName()).thenReturn(usuario.getEmail());
+
+        when(repository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+
+        when(encoder.matches(request.senhaAtual(), usuario.getSenha()))
+                .thenReturn(false);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.atualizar(request, authentication)
+        );
+
         verify(repository, never()).save(any(Usuario.class));
+        verify(encoder, never()).encode("456");
+    }
+
+    @Test
+    void naoDeveAtualizarSenhaSeSenhaAtualNaoForInformada() {
+
+        UsuarioUpdateRequest request = new UsuarioUpdateRequest(null, "456", null);
+
+        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "senhaAntiga");
+
+        when(authentication.getName()).thenReturn(usuario.getEmail());
+
+        when(repository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.atualizar(request, authentication)
+        );
+
+        verify(repository, never()).save(any(Usuario.class));
+        verify(encoder, never()).encode("456");
+    }
+
+    @Test
+    void deveAtualizarNomeESenha() {
+
+        UsuarioUpdateRequest request = new UsuarioUpdateRequest( "123", "456", "José");
+
+        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "senhaAntiga");
+
+        when(authentication.getName()).thenReturn(usuario.getEmail());
+
+        when(repository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+
+        when(encoder.matches(request.senhaAtual(), usuario.getSenha())).thenReturn(true);
+
+        when(encoder.encode(request.novaSenha())).thenReturn("senhaNovaCriptografada");
+
+        service.atualizar(request, authentication);
+
+        assertEquals("José", usuario.getNome());
+        assertEquals("senhaNovaCriptografada", usuario.getSenha());
+
+        verify(repository).save(usuario);
     }
 
 
+    @Test
+    void deveDeletarUsuario() {
+
+        Usuario usuario = new Usuario("Gustavo", "gustavo@gmail.com", "senha");
+
+        when(authentication.getName()).thenReturn(usuario.getEmail());
+
+        when(repository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+
+        boolean resultado = service.deletar(authentication);
+
+        assertTrue(resultado);
+
+        verify(repository).delete(usuario);
+    }
+
+    @Test
+    void naoDeveDeletarUsuarioInexistente() {
+
+        when(authentication.getName()).thenReturn("gustavo@gmail.com");
+
+        when(repository.findByEmail("gustavo@gmail.com")).thenReturn(Optional.empty());
+
+        assertThrows(
+                UsernameNotFoundException.class,
+                () -> service.deletar(authentication)
+        );
+
+        verify(repository, never()).delete(any(Usuario.class));
+    }
 }
